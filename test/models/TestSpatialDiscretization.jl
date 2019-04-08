@@ -1,12 +1,7 @@
 module TestSpatialDiscretization
 
-using Modia
-
-# Desired:
-#   using ModiaMath: plot
-#
-# In order that these packages need not to be defined in the user environment, they are included via Modia:
-using Modia.ModiaMath: plot
+using ..Modia
+using ..ModiaMath: plot
 
 
 const n = 5
@@ -24,7 +19,7 @@ plot(result, "u", figure=1)
 
 
 
-splice(uodd, ueven) = [if isodd(i); uodd[div(i,2)+1] else ueven[div(i,2)] end for i in 1:length(ueven)+length(uodd)] 
+splice(uodd, ueven) = [if isodd(i); uodd[div(i,2)+1] else ueven[div(i,2)] end for i in 1:length(ueven)+length(uodd)]
 
 @model SpatialDiscretization2 begin
     u = Var(size=(5,))
@@ -78,7 +73,7 @@ maskEven(n) = [if isodd(i); 0 else 1 end for i in 1:n]
 @model SpatialDiscretization5 begin
     u = Float(start=[if iseven(i); div(i,2) else 0 end for i in 1:2*n+1], state=false)
     @equations begin
-        broadcast(*, maskEven(2*n+1), der(u)) = u 
+        broadcast(*, maskEven(2*n+1), der(u)) = u
     end
 end
 

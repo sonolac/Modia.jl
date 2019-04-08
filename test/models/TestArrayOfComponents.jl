@@ -2,20 +2,14 @@ module TestArrayOfComponents
 
 println("\nTestArrayOfComponents: Demonstrating the handling of arrays of components")
 
-using Modia
-using Modia.Electric
-
-# Desired:
-#   using ModiaMath: plot
-#   using Test
-#
-# In order that these packages need not to be defined in the user environment, they are included via Modia:
-using Modia.ModiaMath: plot
+using ..Modia
+using ..Modia.Electric
+using ..ModiaMath: plot
 
 @static if VERSION < v"0.7.0-DEV.2005"
     using Base.Test
 else
-    using Modia.Test
+    using Test
 end
 
 @model LPfilter begin
@@ -29,7 +23,7 @@ end
         connect(R.n, C.p)
         connect(C.n, V.n)
     end
-end 
+end
 
 # Array of components
 @model TwoFilters begin
@@ -70,14 +64,14 @@ plot(result, Tuple(["F[$i].C.v" for i in 1:nFilters]), heading="ManyDifferentFil
         # connect(M[1].n, M[2].p)
         # connect(M[2].n, V.n)
     end
-end 
+end
 
 simulate(AdvancedLPfilter, 1)
 
 # -----------------------------------
 
 # Experimental:
-using Modia:@equation
+using ..Modia:@equation
 #addEquation!(M, e) = begin @show e; push!(M.initializers, Modia.Instantiation.Equations([e])) end
 
 @model LPfilterComponent begin
@@ -92,7 +86,7 @@ using Modia:@equation
         connect(C.n, ground.p)
         connect(C.p, out)
     end
-end 
+end
 
 @model ManyConnectedDifferentFilters begin
     V = ConstantVoltage(V=10.0)
@@ -123,11 +117,11 @@ simulate(ManyConnectedDifferentFilters, 1)
         connect(V.n, ground.p)
         #  connect(V.p, F[1].in)
         # Alternative connect constructs:
-        
+
         for i in 1:length(F)                   # ERROR: LoadError: UndefVarError: i not defined
           connect(F[i].in, F[i+1].out)
         end
-        
+
         #connect(F[1:end-1].in, F[2:end].out)     # ERROR: LoadError: UndefVarError: end not defined
         #connect(F[1:length(F)-1].in, F[2:length(F)].out)    # ERROR: LoadError: type Expr has no field in
         #[connect(F[i].in, F[i+1].out) for i in 1:length(F)] # ERROR: LoadError: UndefVarError: i not defined

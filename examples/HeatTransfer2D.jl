@@ -1,15 +1,10 @@
 module HeatTransfer2D
 
-using Modia
-
-# Desired:
-#   using ModiaMath: plot
-#
-# In order that ModiaMath need not to be defined in the user environment, it is included via Modia:
-using Modia.ModiaMath: plot
+using ..Modia
+using ..ModiaMath: plot
 
 
-# Definition of model  
+# Definition of model
 const N      = 30 # 100 # Number of nodes in x-direction (same number of nodes in y-direction
 const L      = 0.2   # Length in x-, and y-direction
 const T0     = 290.0 # Initial temperature
@@ -21,11 +16,11 @@ const rho    = 271.0 # Material Density
 const dL     = L / N # Element length in x- and y-direction
 const c      = lambda/(cp*rho*dL*dL)
 const N2     = N*N
-   
+
 geti(i,j)  = (j-1)*N + i
 
-""" der(T) = heatTransfer2D(T)"""  
-function heatTransfer2D(T::Matrix{Float64}) 
+""" der(T) = heatTransfer2D(T)"""
+function heatTransfer2D(T::Matrix{Float64})
    der_T::Matrix{Float64} = zeros(N,N)
    for i in 1:N
       for j in 1:N
@@ -38,14 +33,14 @@ function heatTransfer2D(T::Matrix{Float64})
       end
    end
    return der_T
-end  
+end
 
 # Not used presently:
 """ Structure of der( heatTransfer2D, T ) """
 function jacobian_incidence(::typeof(heatTransfer2D), args...)
    I::Vector{Int} = fill(1,5*N2)
    J::Vector{Int} = fill(1,5*N2)
-   
+
    r = 0
    for i in 1:N
       for j in 1:N
@@ -58,7 +53,7 @@ function jacobian_incidence(::typeof(heatTransfer2D), args...)
          r += 1
          I[r] = i0
          J[r] = i0
-         
+
          r+= 1
          I[r] = i0
          J[r] = i1
@@ -70,7 +65,7 @@ function jacobian_incidence(::typeof(heatTransfer2D), args...)
          r+= 1
          I[r] = i0
          J[r] = i3
-         
+
          r+= 1
          I[r] = i0
          J[r] = i4
@@ -80,13 +75,13 @@ function jacobian_incidence(::typeof(heatTransfer2D), args...)
    return sparse(I,J,1)
 end
 
-  
+
 @model HeatTransfer begin
    T = Float(start=fill(T0,N,N), fixed=true) # Temperature of the nodes
 @equations begin
    der(T) = heatTransfer2D(T)
   end
-end 
+end
 
 result = simulate(HeatTransfer, 30)
 #plot(result, "T", figure=22)

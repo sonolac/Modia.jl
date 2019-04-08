@@ -2,14 +2,9 @@ module TestRectifier
 
 println("\nRectifier: Demonstrating the ability to simulate models with state events")
 
-using Modia
-using Modia.Electric
-
-# Desired:
-#   using ModiaMath: plot
-#
-# In order that ModiaMath need not to be defined in the user environment, it is included via Modia:
-using Modia.ModiaMath: plot
+using ..Modia
+using ..Modia.Electric
+using ..ModiaMath: plot
 
 
 @model Rectifier begin
@@ -26,7 +21,7 @@ using Modia.ModiaMath: plot
   connect(C.n, R.n)
   connect(C.p, R.p)
   end
-end 
+end
 
 result = checkSimulation(Rectifier, 2, "C.v", 0.4773911315322196, logTranslation=true)
 

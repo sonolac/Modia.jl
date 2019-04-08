@@ -2,14 +2,9 @@ module ConditionalComponent
 
 println("\nRectifier: Demonstrating conditional components")
 
-using Modia
-using Modia.Electric
-
-# Desired:
-#   using ModiaMath: plot
-#
-# In order that these packages need not to be defined in the user environment, they are included via Modia:
-using Modia.ModiaMath: plot
+using ..Modia
+using ..Modia.Electric
+using ..ModiaMath: plot
 
 @model ConditionalLoad begin
     R=Resistor(R=1)
@@ -29,7 +24,7 @@ using Modia.ModiaMath: plot
     connect(C.n, R2.n)
     connect(C.p, R2.p)
     end
-end 
+end
 
 result = simulate(ConditionalLoad, 2, logTranslation=true)
 plot(result, ("C.v", "V.v"), heading="Conditional", figure=12)

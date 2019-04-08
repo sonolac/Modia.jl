@@ -1,19 +1,13 @@
 module TestAutomaticStateSelection
 
-using Modia
-using Modia.Electric
-
-# Desired:
-#   using ModiaMath: plot
-#   using Test
-#
-# In order that these packages need not to be defined in the user environment, they are included via Modia:
-using Modia.ModiaMath: plot
+using ..Modia
+using ..Modia.Electric
+using ..ModiaMath: plot
 
 @static if VERSION < v"0.7.0-DEV.2005"
     using Base.Test
 else
-    using Modia.Test
+    using Test
 end
 
 const logSimulation=true
@@ -32,7 +26,7 @@ const logSimulation=true
         J2*der(w2) = tau
         w1 = w2
     end
-end 
+end
 result = simulate(TwoConnectedInertias, 3.0; logTranslation=true, logSimulation=logSimulation, tearing=true, removeSingularities=false, automaticStateSelection=true)
 plot(result, ("w1", "w2"), figure=1)
 
@@ -51,7 +45,7 @@ plot(result, ("w1", "w2"), figure=1)
         J2*der(w2) = tau
         w1 = ratio*w2
     end
-end 
+end
 result = simulate(TwoInertiasConnectedViaIdealGear, 3.0; logTranslation=true, logSimulation=logSimulation, tearing=true, removeSingularities=true, automaticStateSelection=true)
 plot(result, ("w1", "w2"), figure=2)
 
@@ -64,11 +58,11 @@ plot(result, ("w1", "w2"), figure=2)
         connect(C1.n, C2.n)
         connect(C1.n, ground.p)
     end
-end 
+end
 
 result = simulate(ParallelCapacitors1, 1; logTranslation=true, logSimulation=logSimulation, tearing=true, removeSingularities=true, automaticStateSelection=false)
 plot(result, ("C1.v", "C2.v"), figure=3)
- 
+
 @model ParallelCapacitors2 begin
     C1 = Capacitor(C=1.1, v=Float(start=1.0))
     C2 = Capacitor(C=2.2, v=Float(start=1.0))
@@ -78,7 +72,7 @@ plot(result, ("C1.v", "C2.v"), figure=3)
         connect(C1.n, C2.n)
         connect(C1.n, ground.p)
     end
-end 
+end
 
 result = simulate(ParallelCapacitors2, 1; logTranslation=true, logSimulation=logSimulation, tearing=true, removeSingularities=false, automaticStateSelection=true)
 plot(result, ("C1.v", "C2.v"), figure=4)
@@ -89,17 +83,17 @@ plot(result, ("C1.v", "C2.v"), figure=4)
     C2 = 2e-3
     u1 = Float(size=(), start=1.0)
     u2 = Float(size=(), state=false)
-    i1 = Float(size=())        
-    v1 = Float(size=())        
-    v0 = Float(size=())        
+    i1 = Float(size=())
+    v1 = Float(size=())
+    v0 = Float(size=())
 @equations begin
     C1*der(u1) = i1
     C2*der(u2) = -i1
     u1 = v1 - v0
     u2 = v1 - v0
     v0 = 0
-    end 
-end 
+    end
+end
 result = simulate(ParallelCapacitors2b , 1.0; logTranslation=true, logSimulation=logSimulation, tearing=true, removeSingularities=true, automaticStateSelection=false)
 plot(result, ("u1", "u2", "i1", "v1"), figure=6)
 
@@ -123,7 +117,7 @@ plot(result, ("u1", "u2", "i1", "v1"), figure=6)
         J2*der(w2) = tau
         phi1 = ratio*phi2
     end
-end 
+end
 result = simulate(TwoInertiasConnectedViaIdealGearWithPositionConstraints, 3.0; logTranslation=true, logSimulation=logSimulation, tearing=true, removeSingularities=false, automaticStateSelection=true)
 plot(result, [("phi1", "phi2"), ("w1", "w2")], figure=7)
 println("after plot")

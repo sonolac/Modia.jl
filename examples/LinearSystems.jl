@@ -2,15 +2,9 @@ module LinearSystems
 
 println("\nLinearSystems: Demonstrates type and size deduction.")
 
-using Modia
-using Modia.Blocks: ABCD, Switch
-
-
-# Desired:
-#   using ModiaMath: plot
-#
-# In order that ModiaMath need not to be defined in the user environment, it is included via Modia:
-using Modia.ModiaMath: plot
+using ..Modia
+using ..Modia.Blocks: ABCD, Switch
+using ..ModiaMath: plot
 
 
 @model MySISOABCD begin

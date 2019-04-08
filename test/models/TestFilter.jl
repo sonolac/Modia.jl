@@ -2,14 +2,9 @@ module TestFilter
 
 println("TestFilter: Tests various features of the symbolic handling.")
 
-using Modia
-using Modia.Electric
-
-# Desired:
-#   using ModiaMath: plot
-#
-# In order that these packages need not to be defined in the user environment, they are included via Modia:
-using Modia.ModiaMath: plot
+using ..Modia
+using ..Modia.Electric
+using ..ModiaMath: plot
 
 
 @model LPfilter begin
@@ -23,7 +18,7 @@ using Modia.ModiaMath: plot
         connect(R.n, C.p)
         connect(C.n, V.n)
     end
-end 
+end
 result = simulate(LPfilter, 2)
 plot(result, ("R.v", "C.v", "V.v"), figure=3)
 
@@ -46,7 +41,7 @@ simulate(LPfilter, 2.0, aliasElimination=true, removeSingularities=true, logName
         connect(R.n, C.p)
         connect(C.n, V.n)
     end
-end 
+end
 
 #res = simulate(LPfilterWithoutGround , 2)
 checkSimulation(LPfilterWithoutGround, 2, "C.v", 9.996843043981416, removeSingularities=true)
@@ -60,7 +55,7 @@ checkSimulation(LPfilterWithoutGround, 2, "C.v", 9.996843043981416, removeSingul
         connect(R.n, C.p)
         connect(C.n, V.n)
     end
-end 
+end
 #checkSimulation(LPfilterWithoutGround1, 2, "C.v", 9.996843043981416)
 
 @model LPfilterWithoutGround2 begin
@@ -72,7 +67,7 @@ end
         connect(R.n, C.p)
         connect(C.n, V.n)
     end
-end 
+end
 
 
 @model LPfilterAndSineSource begin
@@ -84,7 +79,7 @@ end
         connect(R.n, C.p)
         connect(C.n, V.n)
     end
-end 
+end
 result = simulate(LPfilterAndSineSource, 10)
 plot(result, ("C.v", "V.v"), heading="LPfilterAndSineSource", figure=4)
 
@@ -101,7 +96,7 @@ plot(result, ("C.v", "V.v"), heading="LPfilterAndSineSource", figure=4)
         connect(R.n, C.p)
         connect(C.n, ground.p)
     end
-end 
+end
 
 # Redeclaration of component models
 @model HPfilter begin
@@ -120,13 +115,13 @@ end
     @extends GenericFilter(m=Capacitor)
 end
 checkSimulation(NewFilter, 2, "C.v", 9.999596486928553, removeSingularities=true)
- 
- 
+
+
 #high = true
 # Conditional model constructor
 @model CondFilter begin
     high = true  # Does not work without this.high.
-    @extends LPfilter(R=if high Capacitor(C=2) else Resistor(R=3) end, 
+    @extends LPfilter(R=if high Capacitor(C=2) else Resistor(R=3) end,
     C=if high Resistor(R=1) else Capacitor(C=1) end)
 end
 checkSimulation(CondFilter, 2, "C.v", 3.678778096777374, removeSingularities=true)
@@ -134,8 +129,8 @@ checkSimulation(CondFilter, 2, "C.v", 3.678778096777374, removeSingularities=tru
 
 # Conditional model
 @model CondFilter2 begin
-    high = true 
-    @extends LPfilter(R=high ? Capacitor(C=2) : Resistor(R=1), 
+    high = true
+    @extends LPfilter(R=high ? Capacitor(C=2) : Resistor(R=1),
     C=high ? Resistor(R=1) : Capacitor(C=2))
 end
 checkSimulation(CondFilter2, 2, "C.v", 3.678778096777374, removeSingularities=true)
@@ -153,13 +148,13 @@ end
 checkSimulation(FilterModels, 2, "C.v", 3.678778096777374, removeSingularities=true)
 
 
-# Model component arrays 
+# Model component arrays
 ModelComponents = [Resistor(R=5), Capacitor(C=1)]
 
 @model FilterComponents begin
     selectModel = 2
     high = true
-    @extends LPfilter(R=high ? ModelComponents[selectModel] : Resistor(), 
+    @extends LPfilter(R=high ? ModelComponents[selectModel] : Resistor(),
     C=high ? Resistor(R=2) : Capacitor())
 end
 checkSimulation(FilterComponents, 2, "C.v", 3.678778096777374)

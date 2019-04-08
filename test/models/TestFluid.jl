@@ -47,14 +47,14 @@ using  .MyModiaMedia
 
 println("TestFluid: Tests features needed for Fluid models")
 
-using  Modia
-import ModiaMath
+using  ..Modia
+import ..ModiaMath
 
 
 const MediumVariable() = Var(size=())
 
 module BaseProperties
-    using  Modia
+    using  ..Modia
     using  ..MyModiaMedia
     using  ...TestFluid: MediumVariable
 
@@ -68,7 +68,7 @@ module BaseProperties
     @equations begin
         d      = density(Medium)
         der_d  = 0.0
-        end   
+        end
     end
 
 
@@ -82,7 +82,7 @@ module BaseProperties
         d     = density(Medium, p)
         der_d = der(d)
         der_p = der(p)
-        end   
+        end
     end
 end
 
@@ -183,11 +183,11 @@ end
     a=FluidPort()
     b=FluidPort()
 @equations begin
-    b.Medium = a.Medium 
+    b.Medium = a.Medium
     R*a.m_flow = a.p - b.p
     0 = a.m_flow + b.m_flow
     end
-end 
+end
 
 @model PipeSystem begin
   source=Source(P=100.0, Medium=water)
@@ -197,7 +197,7 @@ end
   connect(pipe.a, source.a)
   connect(pipe.b, sink.a)
   end
-end 
+end
 
 @model ParallelPipeSystem begin
   source=Source(P=100, Medium=water)
@@ -211,7 +211,7 @@ end
   connect(pipe2.a, source.a)
   connect(pipe2.b, sink.a)
   end
-end 
+end
 
 
 # Test of BaseProperties

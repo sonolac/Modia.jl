@@ -1,20 +1,13 @@
 module TestEquations
 
-using Modia
-
-# Desired:
-#   using ModiaMath: plot
-#   using Test
-#   using LinearAlgebra
-#
-# In order that these packages need not to be defined in the user environment, they are included via Modia:
-using Modia.ModiaMath: plot
+using ..Modia
+using ..ModiaMath: plot
 
 @static if VERSION < v"0.7.0-DEV.2005"
     using Base.Test
 else
-    using Modia.Test
-    using Modia.LinearAlgebra
+    using Test
+    using LinearAlgebra
     eye(n) = Matrix{Float64}(I, n, n)
     diagm(v) = Matrix(Diagonal(v))
     q(qr) = qr.Q
@@ -25,7 +18,7 @@ end
 
 @model Test begin
     a = -1; b = 1; c = 1
-    n = 10; 
+    n = 10;
     M = Float()
     u = Float(); x = Float(start=0.0)
     on = Variable(); s = Variable()

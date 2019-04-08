@@ -2,25 +2,20 @@ module TestCurrentController
 
 println("\nCurrentController: Demonstrating the ability to simulate mixed domain models")
 
-using Modia
-using Modia.Electric
-using Modia.Rotational
-using Modia.Blocks
-
-# Desired:
-#   using ModiaMath: plot
-#
-# In order that ModiaMath need not to be defined in the user environment, it is included via Modia:
-using Modia.ModiaMath: plot
+using ..Modia
+using ..Modia.Electric
+using ..Modia.Rotational
+using ..Modia.Blocks
+using ..ModiaMath: plot
 
 
 @model CurrentController begin
   k=30   # Gain of PI current controller
   T=0.005   # Time constant of PI current controller
-  Jmotor=Inertia(J=0.0025) 
+  Jmotor=Inertia(J=0.0025)
   emf=EMF(k=1.016) #, phi=Float(state=false))
-  inductor=Inductor(L=0.061) 
-  resistor=Resistor(R=13.8) 
+  inductor=Inductor(L=0.061)
+  resistor=Resistor(R=13.8)
   ground=Ground()
   signalVoltage=SignalVoltage()
   currentSensor=CurrentSensor()
@@ -33,15 +28,15 @@ using Modia.ModiaMath: plot
   spring=SpringDamper(c=5e5, d=500)
 @equations begin
   connect(emf.flange, Jmotor.flange_a)
-  connect(resistor.n, inductor.p) 
+  connect(resistor.n, inductor.p)
   connect(ground.p, emf.n)
   connect(inductor.n, emf.p)
   connect(signalVoltage.p, resistor.p)
   connect(currentSensor.p, ground.p)
   connect(currentSensor.n, signalVoltage.n)
-  connect(currentSensor.i, feedback.u2) 
+  connect(currentSensor.i, feedback.u2)
   connect(PI1.y, firstOrder.u)
-  connect(feedback.y, PI1.u) 
+  connect(feedback.y, PI1.u)
   connect(signalVoltage.v, firstOrder.y)
   connect(feedback.u1, step.y)
   connect(Jmotor.flange_b, gear.flange_a)

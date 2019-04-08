@@ -2,13 +2,8 @@ module ConditionalEquations
 
 println("\nDemonstrating conditional equations")
 
-using Modia
-
-# Desired:
-#   using ModiaMath: plot
-#
-# In order that these packages need not to be defined in the user environment, they are included via Modia:
-using Modia.ModiaMath: plot
+using ..Modia
+using ..ModiaMath: plot
 
 @model Conditional begin
     x = Var(start=1.0)
@@ -19,7 +14,7 @@ using Modia.ModiaMath: plot
 @equations begin
     u = sin(time)
     if ! steadyState
-      der(x) + 2x = u  
+      der(x) + 2x = u
     else
       0 + 2x = u
     end
@@ -29,7 +24,7 @@ using Modia.ModiaMath: plot
       y = 2
     end
   end
-end 
+end
 
 result = simulate(Conditional, 2, logTranslation=true, removeSingularities=false)
 plot(result, ("x", "y"), heading="Conditional", figure=1)
@@ -60,7 +55,7 @@ plot(result, ("x", "y"), heading="ConditionalInstance", figure=3)
 @equations begin
     u = sin(time)
     if ! steadyState #&& cond
-      der(x) + 2x = u  
+      der(x) + 2x = u
     else
       0 + 2x = u
     end
@@ -68,7 +63,7 @@ plot(result, ("x", "y"), heading="ConditionalInstance", figure=3)
       y = 1
     end
   end
-end 
+end
 
 result = simulate(Conditional2, 2, logTranslation=false, removeSingularities=false)
 plot(result, ("x"), heading="Conditional2", figure=1)

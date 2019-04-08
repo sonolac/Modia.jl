@@ -1,13 +1,7 @@
-# Desired:
-#   using Test
-#
-# In order that Test need not to be defined in the user environment, it is included via Modia:
-import Modia
-
 @static if VERSION < v"0.7.0-DEV.2005"
     using Base.Test
 else
-    using Modia.Test
+    using Test
 end
 
 
@@ -27,7 +21,7 @@ end
     include("models/TestArrayOfComponents.jl")
     include("models/TestConditionalComponents.jl")
     include("models/TestConditionalEquations.jl")
-    
+
     include("models/TestSpatialDiscretization.jl")
 
     include("models/MergingModifiers.jl")
@@ -42,5 +36,5 @@ end
 
     Modia.ModiaLogging.printTestStatus()
 
-end 
+end
 nothing

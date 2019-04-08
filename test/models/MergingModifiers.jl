@@ -2,21 +2,16 @@ module MergingModifiers
 
 println("\nDemonstrating merging modifiers")
 
-using Modia
-
-# Desired:
-#   using ModiaMath: plot
-#
-# In order that these packages need not to be defined in the user environment, they are included via Modia:
-using Modia.ModiaMath: plot
+using ..Modia
+using ..ModiaMath: plot
 
 
 @model M begin
   x = Float(start=1.0, info="state")
 @equations begin
-    der(x) + 2x = 0  
+    der(x) + 2x = 0
   end
-end 
+end
 
 result = simulate(M, 1, logTranslation=true, removeSingularities=false)
 plot(result, ("x"), heading="M", figure=1)

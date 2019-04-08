@@ -2,21 +2,14 @@ module TestBalls
 
 println("\nCollidingBalls: Demonstrating the use of allInstances to set up contact force between any number of balls")
 
-using Modia
-
-# Desired:
-#   using ModiaMath: plot
-#   using Test
-#   using LinearAlgebra
-#
-# In order that these packages need not to be defined in the user environment, they are included via Modia:
-using Modia.ModiaMath: plot
+using ..Modia
+using ..ModiaMath: plot
 
 @static if VERSION < v"0.7.0-DEV.2005"
   using Base.Test
 else
-  using Modia.Test
-  using Modia.LinearAlgebra
+  using Test
+  using LinearAlgebra
 end
 
 const k=10000
@@ -25,7 +18,7 @@ const radius=0.05
 
 springDamper(r, v) = k*r + d*v
 
-function getForce(r, v, positions, 
+function getForce(r, v, positions,
   velocities, contactLaw)
   # Calculate the forces on this body
   force = zeros(2)
@@ -35,9 +28,9 @@ function getForce(r, v, positions,
     if r != pos
       delta = r - pos
       deltaV = v - vel
-      f = if norm(delta) < 2*radius; 
+      f = if norm(delta) < 2*radius;
         -contactLaw((norm(delta)-
-          2*radius)*delta/norm(delta), deltaV) else 
+          2*radius)*delta/norm(delta), deltaV) else
         zeros(2) end
       force += f
     end
@@ -50,7 +43,7 @@ end
   v = Var()
   f = Var()
   m = 1.0
-  event = Boolean(size=(), start=false) 
+  event = Boolean(size=(), start=false)
 @equations begin
   der(r) = v
   m*der(v) = f
