@@ -84,21 +84,7 @@ export skew, skewCoords
 export allInstances
 export @component, addComponent!
 
-# Import packages that are used in examples and tests
-# (in order that there are no requirements on the environment
-#  in which the examples and tests are executed).
-import DataStructures
-import ModiaMath
-import StaticArrays
-import Unitful
-
-@static if VERSION >= v"0.7.0-DEV.2005"
-    import LinearAlgebra
-    import Markdown
-    import SparseArrays
-    import Test
-end
-
+import ..ModiaMath
 
 # Include all sub-modules of Modia
 include("language/ModiaLogging.jl")

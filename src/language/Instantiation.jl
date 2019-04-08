@@ -26,7 +26,7 @@ global logInstantiation = false
 global logFlattening = false
 #const distributed = false
 
-function setOptions(options) 
+function setOptions(options)
     global logMacros = false
     if haskey(options, :logMacros)
         global logMacros = options[:logMacros]
@@ -50,38 +50,27 @@ function setOptions(options)
 
 end
 
-# Desired:
-#   using  DataStructures: OrderedDict
-#   using  LinearAlgebra
-#   import ModiaMath
-#   using  Unitful
-#   import Markdown
-#
-# Since package Instantiation is included directly in a test (in Modia/test/symbolic/BLTandPantelides/setup.jl)
-# all these packages above are included via Modia, in order that these packages need not to be defined in the 
-# user environment.
-#
-import Modia
-using  Modia.DataStructures: OrderedDict
+import ..Modia
+using  DataStructures: OrderedDict
 #0.7 using SparseArrays
 @static if VERSION < v"0.7.0-DEV.2005"
-    Nothing = Void 
+    Nothing = Void
     AbstractDict = Associative
     macro __MODULE__()
         return current_module()
     end
 else
-    using Modia.LinearAlgebra
+    using LinearAlgebra
 end
 
-import Modia.ModiaMath 
-using  Modia.Unitful
+import ..ModiaMath
+using  Unitful
 using ..ModiaLogging
 #using ..Synchronous
 
 
 @static if VERSION >= v"0.7.0-DEV.2005"
-    import Modia.Markdown
+    import Markdown
 else
     import Base.Markdown
 end
@@ -134,7 +123,7 @@ end
 """
 A constructor for a `Variable`, the main object for a model variable with attributes
 
-## Keyword arguments 
+## Keyword arguments
 
   * `value = undefined`: the value of the Variable
   * `info = ""`: documentation string
@@ -153,31 +142,31 @@ A constructor for a `Variable`, the main object for a model variable with attrib
   * `property = general`: other options include `symmetric`, `orthogonal`, and `rotationGroup3D`
 """
 Variable(;
-    # The variability, type and info are added as attributes in the type for uniform treatment.  
+    # The variability, type and info are added as attributes in the type for uniform treatment.
     # Input/output, etc should also be added.
 
-    value=nothing, 
-    info="", 
-    unit=if typeof(value) <: Unitful.Quantity; Unitful.unit(value) else Unitful.NoUnits end, 
-    displayUnit=unit, 
-    min=nothing, 
-    max=nothing, 
-    start=nothing, 
-    fixed::Bool=false, 
+    value=nothing,
+    info="",
+    unit=if typeof(value) <: Unitful.Quantity; Unitful.unit(value) else Unitful.NoUnits end,
+    displayUnit=unit,
+    min=nothing,
+    max=nothing,
+    start=nothing,
+    fixed::Bool=false,
     nominal=nothing,
-    variability=continuous, 
-    T=if value == nothing; Any else typeof(value) end, 
-    size=if value == nothing; nothing else Base.size(value) end, 
-    flow::Bool=false, 
-    state::Bool=true, 
-    property=general) = 
-    Variable(variability, T, size, value, 
+    variability=continuous,
+    T=if value == nothing; Any else typeof(value) end,
+    size=if value == nothing; nothing else Base.size(value) end,
+    flow::Bool=false,
+    state::Bool=true,
+    property=general) =
+    Variable(variability, T, size, value,
     unit, displayUnit, min, max, start, fixed, nominal, info, flow, state, property)
-    
+
 function Base.show(io::IO, v::Variable)
     print(io, "Variable(")
     first = true
-    
+
     if v.value != nothing
         if !first; print(io, ", ") end
         print(io, "value = ", v.value)
@@ -189,61 +178,61 @@ function Base.show(io::IO, v::Variable)
         print(io, "variability = ", v.variability)
         first = false
     end
-    
+
     if v.typ != Any
         if !first; print(io, ", ") end
         print(io, "T = ", v.typ)
         first = false
     end
-    
+
     if v.size != nothing
         if !first; print(io, ", ") end
         print(io, "size = ", v.size)
         first = false
     end
-    
+
     if v.start != nothing
         if !first; print(io, ", ") end
         print(io, "start = ", v.start)
         first = false
     end
-    
+
     if v.nominal != nothing
         if !first; print(io, ", ") end
         print(io, "nominal = ", v.nominal)
         first = false
     end
-    
+
     if v.unit != NoUnits
         if !first; print(io, ", ") end
         print(io, "unit = ", v.unit)
         first = false
     end
-    
+
     if v.min != nothing
         if !first; print(io, ", ") end
         print(io, "min = ", v.min)
         first = false
     end
-    
+
     if v.max != nothing
         if !first; print(io, ", ") end
         print(io, "max = ", v.max)
         first = false
     end
-    
+
     if v.flow != false
         if !first; print(io, ", ") end
         print(io, "flow = ", v.flow)
         first = false
     end
-    
+
     if v.state != true
         if !first; print(io, ", ") end
         print(io, "state = ", v.state)
         first = false
     end
-    
+
     println(io, ")")
 end
 
@@ -284,7 +273,7 @@ end
 
 function Base.show(io::IO, g::GetField)
     if shortSyntax
-        print(io, g.base, ".", g.name)  
+        print(io, g.base, ".", g.name)
     else
         print(io, "GetField(", g.base, ", ", g.name, ")")
     end
@@ -299,7 +288,7 @@ function Base.show(io::IO, d::Der)
     if shortSyntax
         print(io, "der(", d.base, ")")
     else
-        print(io, "Der(", d.base, ")")  
+        print(io, "Der(", d.base, ")")
     end
 end
 
@@ -311,7 +300,7 @@ function Base.show(io::IO, this::This)
     if shortSyntax
         print(io, "this")
     else
-        print(io, "This()")  
+        print(io, "This()")
     end
 end
 
@@ -451,8 +440,8 @@ function recode_equations(eqs)
                 push!(equations, recode(eq.args[2]))
             else
                 push!(equations, recode(eq.args[3]))
-            end       
-=#            
+            end
+=#
         else
             push!(equations, recode(eq))
         end
@@ -560,7 +549,7 @@ function code_variable(ex::Expr, varnames)
 
             if siz != []
                 typ = :(Array{$typ,$(length(siz))})
-                  
+
             end
             if baseTyp in [:Int64, :Float64, :Bool]
                 sta = Expr(:kw, :start, zeros(eval(baseTyp), siz...))
@@ -643,7 +632,7 @@ function code_model(head, top_ex)
             @show cond
             if cond
                 varnames[get_declared_var_name(ex.args[2].args[2])] = false
-            end        
+            end
         else
             varnames[get_declared_var_name(ex)] = false
         end
@@ -670,7 +659,7 @@ function code_model(head, top_ex)
             @show cond
             if cond
                 varnames[get_declared_var_name(ex.args[2].args[2])] = true
-            end        
+            end
         else
             initvar_ex = code_variable(ex, varnames)
             push!(initializers, initvar_ex)
@@ -705,7 +694,7 @@ macro model(head, ex)
     coded = code_model(head, ex)
     # Resolve code in macro environment
     esccoded = esc(coded)
-    
+
     if logMacros
         println("@model:", head)
         @show Base.remove_linenums!(ex)
@@ -840,7 +829,7 @@ mutable struct Instance
 end
 
 function Instance(model_name::Symbol, mod, info, variables, equations, partial)
-    Instance(model_name, mod, info, VariableDict(variables), 
+    Instance(model_name, mod, info, VariableDict(variables),
         collect(Any, equations), partial, [], [], [], [])
 end
 
@@ -914,7 +903,7 @@ end
 
 function initialize!(instance::Instance, iv::InitVariable, time::Float64, kwargs::AbstractDict)
     # @show iv.fdef
-    add_variable!(instance, iv.name, 
+    add_variable!(instance, iv.name,
         as_field_value(haskey(kwargs, iv.name) ? kwargs[iv.name] : iv.init(instance, time),
                        time))
 end
@@ -931,7 +920,7 @@ function initialize!(instance::Instance, ext::Extends, time::Float64, kwargs::Ab
 end
 
 function instantiate_equation!(instance::Instance, eq)
-    if !isexpr(eq, :if) 
+    if !isexpr(eq, :if)
         push!(instance.equations, eq)
         return
     end
@@ -941,10 +930,10 @@ function instantiate_equation!(instance::Instance, eq)
         return
     end
     =#
-    
+
     println("Conditional equation:")
-    println(prettyPrint(eq)) 
-    if length(eq.args) > 3 
+    println(prettyPrint(eq))
+    if length(eq.args) > 3
         error("elseif is presently not handled.")
     end
     cond = eq.args[1]
@@ -955,7 +944,7 @@ function instantiate_equation!(instance::Instance, eq)
         end
     else
         op = cond.args[1]
-        if typeof(cond.args[2]) == GetField 
+        if typeof(cond.args[2]) == GetField
             cond_value = lookup(instance, cond.args[2])
             if typeof(cond_value) == Variable
               cond_value = cond_value.value
@@ -970,15 +959,15 @@ function instantiate_equation!(instance::Instance, eq)
         end
     end
     println("condition = ", cond_value)
-    
+
     eq_index = cond_value ? 2 : 3
     if eq_index <= length(eq.args)
       branch_eq = eq.args[eq_index]
       if ! (branch_eq.head in [:(=), :block])
           error("At most one equation is currently allowed in conditional equation.")
       end
-      
-      if branch_eq.head == :(=) 
+
+      if branch_eq.head == :(=)
           instantiate_equation!(instance, branch_eq)
       end
     end
@@ -1003,7 +992,7 @@ function instantiate(model::Model, time::Float64, kwargs=[])
         dump(model, maxdepth=100)
         @show kwargs
     end
-    instance = Instance(model_name_of(model), model.mod, get(kwargs, :info, ""), 
+    instance = Instance(model_name_of(model), model.mod, get(kwargs, :info, ""),
 			VariableDict(), [], :partial in model.arguments)
     if logInstantiation
         println("dump(instance):")
@@ -1025,7 +1014,7 @@ function instantiate(model::Model, time::Float64, kwargs=[])
             initializer = model.initializers[i]
             initialize!(insts[i], initializer, time, kwargs)
             @show insts[i]
-        end    
+        end
         @show insts
         instance = vcat(insts)
     end
@@ -1121,7 +1110,7 @@ function add_connection!(flat::Flat, prefix::AbstractString, instance::Instance,
     inst = lookup(instance, eq.a.base)
     if inst === nothing; return; end
     inst::Instance
-    
+
     if eq.a.name in keys(vars_of(inst))
         atype = get_connector_type(lookup(instance, eq.a))
     else
@@ -1193,7 +1182,7 @@ function to_access(connector::Connection, field::Union{Symbol,Nothing})
 end
 
 function flatten(instance::Instance)
-    flat = Flat(VariableDict(), [], 
+    flat = Flat(VariableDict(), [],
         Dict{Symbol,Symbol}(), Dict{Symbol,Dict}())
     flatten!(flat, "", instance)
 
@@ -1270,7 +1259,7 @@ function prettyfy(ex::Expr)
     if isexpr(ex, :quote) || isexpr(ex, :line)
         nothing
     elseif isexpr(ex, :block)
-#        if length(ex.args) >=2 # need to handle emtpy else 
+#        if length(ex.args) >=2 # need to handle emtpy else
           prettyfy(ex.args[2])
 #        end
     else
@@ -1284,7 +1273,7 @@ const oper = [:!, :(!=), :(!==), :%, :&, :*, :+, :-, :/, ://, :<, :<:, :<<, :(<=
                :ctranspose, :getindex, :hcat, :hvcat, :setindex!, :transpose, :vcat,
                :xor, :|, :|>, :~ #= , :× =# , :÷, :∈, :∉, :∋, :∌, :∘, :√, :∛, :∩, :∪, :≠, :≤,
                :≥ #=, :⊆, :⊈, :⊊, :⊻, :⋅=#]
-               
+
 const operator_table = Dict(getfield(Base,name) => name for name in
     filter(name->isdefined(Base,name), oper))
 
@@ -1313,7 +1302,7 @@ function Docs.getdoc(m::Model, args = [])
     catch
         ""
     end
-  
+
     #vars = instantiate(m, 0.0, args).variables
     vars = instantiate(m, 0.0).variables
     if length(vars) > 0
@@ -1324,9 +1313,9 @@ function Docs.getdoc(m::Model, args = [])
         docstr *= formatvar(v)
         docstr *= "\n"
     end
-    
+
     Markdown.parse(docstr)
 end
 
 
-end 
+end

@@ -1,14 +1,14 @@
 """
 Modia module with electric component models (inspired from Modelica Standard Library).
 
-* Developer: Hilding Elmqvist, Mogram AB  
+* Developer: Hilding Elmqvist, Mogram AB
 * Copyright (c) 2016-2018: Hilding Elmqvist, Toivo Henningsson, Martin Otter
 * License: MIT (expat)
 
 The building blocks for electric components are:
 
 - `Pin` - The main connector representing an electrical node with variables `v` and `i`.
-- `OnePort` - Base model for an electric device with two `Pin`s with variables 
+- `OnePort` - Base model for an electric device with two `Pin`s with variables
     `v`, `i`, `p`, and `n`.
 
 The following functions define variables with appropriate units:
@@ -25,9 +25,9 @@ using ..Blocks
 using ..Synchronous: positive
 using Unitful
 
-using Modia
+using ..Modia
 
-export Pin, Ground, OnePort, Resistor, Capacitor, Inductor, 
+export Pin, Ground, OnePort, Resistor, Capacitor, Inductor,
   ConstantVoltage, StepVoltage, SignalVoltage, SineVoltage, IdealOpAmp3Pin, IdealDiode,
   Voltage, Current, Resistance, Capacitance
 
@@ -39,17 +39,17 @@ Current(; args...) = Variable(;T=Unitful.A, size=(), start = 0.0, info = "Curren
 Resistance(; args...) = Variable(;T=Unitful.Ω, size=(), args...)
 "Electric capacitance, farads"
 Capacitance(; args...) = Variable(;T=Unitful.F, size=(), args...)
-  
+
 @model Pin1 begin
     v = Float()
     i = Float(flow=true)
-end 
+end
 
 "An electric node for connections"
 @model Pin begin
     v = Voltage(info = "Potential of the pin")
     i = Current(info = "Current into the pin", flow = true)
-end 
+end
 
 "Grounded `Pin` with zero voltage"
 @model Ground begin
@@ -57,7 +57,7 @@ end
     @equations begin
         p.v = 0
     end
-end 
+end
 
 @model OnePort1 begin
     v = Float()
@@ -69,7 +69,7 @@ end
         0 = p.i + n.i
         i = p.i
     end
-end 
+end
 
 "Base model for an electric device with two `Pin`s"
 @model OnePort begin
@@ -82,7 +82,7 @@ end
         0 = p.i + n.i
         i = p.i
     end
-end 
+end
 
 "Ideal linear electrical resistor"
 @model Resistor begin
@@ -106,7 +106,7 @@ end
         i = p.i
         R * i = v
     end
-end 
+end
 
 "Ideal linear electric capacitor"
 @model Capacitor begin
@@ -116,7 +116,7 @@ end
     @equations begin
         C*der(v) = i
     end
-end 
+end
 
 @model Capacitor1 begin
     p = Pin()
@@ -130,14 +130,14 @@ end
         i = p.i
         C * der(v) = i
     end
-end 
+end
 
 "Ideal linear electric inductor"
 @model Inductor begin
     L = Parameter(1.0, start = 1.0, info = "Inductance", T = Unitful.H)
     @extends OnePort()
     @inherits i, v
-    @equations begin 
+    @equations begin
         L * der(i) = v
     end
 end
@@ -171,23 +171,23 @@ end
     n = Pin()
     v = Float()
     i = Float()
-    @equations begin 
+    @equations begin
         v = p.v - n.v
         0 = p.i + n.i
         i = p.i
-    end 
-end 
+    end
+end
 
 @model VoltageSource begin
     @extends OnePort()
     @inherits v
     offset = 0 # Voltage offset
-    startTime = 0 # Time offset 
+    startTime = 0 # Time offset
     signalSource = SignalSource(offset=offset, startTime=startTime)
-    @equations begin 
+    @equations begin
         v = signalSource.y
-    end 
-end 
+    end
+end
 
 @model SineVoltage1 begin
     # Sine voltage source
@@ -195,7 +195,7 @@ end
     phase = 0 # Phase of sine wave
     freqHz = Parameter() # Frequency of sine wave
     @extends VoltageSource(signalSource=Sine(amplitude=V, freqHz=freqHz, phase=phase))
-end 
+end
 
 """
 Sinusoidal voltage source
@@ -207,10 +207,10 @@ Sinusoidal voltage source
     freqHz = Parameter() # Frequency of sine wave
     # @extends VoltageSource(signalSource = Sine())
     @extends VoltageSource(signalSource=Sine(amplitude=1, freqHz=1, offset=0, startTime=0))
-    # @extends VoltageSource(signalSource = Sine(amplitude=V, freqHz=freqHz, phase=phase, 
+    # @extends VoltageSource(signalSource = Sine(amplitude=V, freqHz=freqHz, phase=phase,
     # offset=offset, startTime=startTime))
     # @inherits offset, startTime
-end 
+end
 
 """
 Ideal operational amplifier (norator-nullator pair), but 3 pins
@@ -219,7 +219,7 @@ Ideal operational amplifier (norator-nullator pair), but 3 pins
     in_p = Pin()
     in_n = Pin()
     out = Pin()
-    @equations begin 
+    @equations begin
         in_p.v = in_n.v
         in_p.i = 0
         in_n.i = 0
@@ -233,16 +233,16 @@ Ideal diode
     @extends OnePort()
     @inherits v, i
     s = Float(start=0.0, info = "Auxiliary variable") # For position on the diode characteristic
-    #=   
+    #=
     s = 0: knee point
     s < 0: below knee point, diode conducting
-    s > 0: above knee point, diode locking 
+    s > 0: above knee point, diode locking
     =#
     @equations begin
         v = if positive(s); 0 else s end
-        i = if positive(s); s else 0 end 
+        i = if positive(s); s else 0 end
     end
-end 
+end
 
 @model IdealDiode2 begin # Ideal diode
     @extends OnePort()
@@ -252,17 +252,17 @@ end
     Vknee = 0 # Forward threshold voltage
     # off = Variable(start=true) # Switching state
     s = Float(start=0.0) # Auxiliary variable for actual position on the ideal diode characteristic
-    #=  
+    #=
     s = 0: knee point
     s < 0: below knee point, diode conducting
-    s > 0: above knee point, diode locking 
+    s > 0: above knee point, diode locking
     =#
     @equations begin
         # off := s < 0
         v = s * if !positive(s); 1 else Ron end + Vknee
         i = s * if !positive(s); Goff else 1 end + Goff * Vknee
     end
-end 
+end
 
 @model IdealDiode1 begin # Ideal diode
     @extends OnePort()
@@ -272,16 +272,16 @@ end
     Vknee = 0 # Forward threshold voltage
     off = Variable(start=true) # Switching state
     s = Float(start=0) # Auxiliary variable for actual position on the ideal diode characteristic
-    #=  
+    #=
     s = 0: knee point
     s < 0: below knee point, diode conducting
-    s > 0: above knee point, diode locking 
+    s > 0: above knee point, diode locking
     =#
     @equations begin
         off := positive(-s * 1.0)
         v = s * if off; 1 else Ron end + Vknee
         i = s * if off; Goff else 1 end + Goff * Vknee
     end
-end 
+end
 
 end

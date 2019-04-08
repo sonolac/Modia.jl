@@ -1,7 +1,7 @@
 """
 Modia module with block component models (inspired from Modelica Standard Library).
 
-* Developer: Hilding Elmqvist, Mogram AB  
+* Developer: Hilding Elmqvist, Mogram AB
 * Copyright (c) 2016-2018: Hilding Elmqvist, Toivo Henningsson, Martin Otter
 * License: MIT (expat)
 
@@ -9,7 +9,7 @@ Modia module with block component models (inspired from Modelica Standard Librar
 module Blocks
 
 #using ..Instantiation
-using Modia
+using ..Modia
 export FirstOrder, Feedback, PI, Step, Sine, Switch, MIMO
 
 
@@ -35,10 +35,10 @@ First-order transfer function block (= 1 pole)
 
     @extends SISO()
     @inherits u, y
-    @equations begin 
+    @equations begin
         der(y) = (k * u - y) / T
     end
-end 
+end
 
 """
 Output difference between commanded and feedback input
@@ -47,10 +47,10 @@ Output difference between commanded and feedback input
     u1 = Float(info = "Input 1")
     u2 = Float(info = "Input 2")
     y = Float(info = "Output signal")
-    @equations begin 
+    @equations begin
         y = u1 - u2
     end
-end 
+end
 
 """
 Proportional-Integral controller
@@ -61,8 +61,8 @@ Proportional-Integral controller
 
     @extends SISO()
     @inherits u, y
-    x = Float(start=0)   # State of block 
-    @equations begin 
+    x = Float(start=0)   # State of block
+    @equations begin
         der(x) = u / T
         y = k * (x + u)
     end
@@ -93,7 +93,7 @@ Step signal
     @extends SignalSource()
     @inherits y, offset, startTime
     t = Float(start=0.0)
-    @equations begin 
+    @equations begin
         y = offset + (t < startTime ? 0 : height)
         der(t) = 1
     end
@@ -111,7 +111,7 @@ Sinusoidal signal
     @extends SO()
     @inherits y
     t = Float(start=0.0)
-    @equations begin 
+    @equations begin
 #  y = offset + if time < startTime;  0 else amplitude*sin(2*pi*freqHz*(time - startTime) + phase) end
         y = offset + if t < startTime;  0 else amplitude * sin(2 * pi * freqHz * (t - startTime) + phase) end
         der(t) = 1
@@ -125,7 +125,7 @@ end
     phase = 0 # Phase of sine wave
     @extends SignalSource()
     @inherits y, offset, startTime
-    @equations begin 
+    @equations begin
         y = offset + if time < startTime;  0 else amplitude * sin(2 * pi * freqHz * (time - startTime) + phase) end
     end
 end

@@ -37,7 +37,7 @@ using ..SymbolicTransform
 
 using ..ExactlyRemoveSingularities
 using ..StateSelection
-import ModiaMath
+import ..ModiaMath
 using ..ModiaLogging
 
 #= Temporarily removed due to problem with PyPlot
